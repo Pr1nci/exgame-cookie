@@ -2,10 +2,13 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { Layout } from "./components/Layout";
 import { Login } from "./routes/Login";
+import { Register } from "./routes/Register";
 import { Root } from "./routes/Root";
 import { StudentGuard } from "./routes/student/StudentGuard";
 import { MySubscriptions } from "./routes/student/subscriptions/MySubscriptions";
 import { Subscribe } from "./routes/student/subscriptions/Subscribe";
+import { Classes } from "./routes/teacher/classes/Classes";
+import { ClassStudents } from "./routes/teacher/classes/Students";
 import { AddExam } from "./routes/teacher/exams/AddExam";
 import { EditExam } from "./routes/teacher/exams/EditExam";
 import { Exams } from "./routes/teacher/exams/Exams";
@@ -24,6 +27,8 @@ function App() {
           {/* Teacher */}
           <Route path="teacher" element={<TeacherGuard />}>
             <Route index element={<Exams />} />
+            <Route path="classes" element={<Classes />}></Route>
+            <Route path="class-students" element={<ClassStudents />}></Route>
             <Route path="exam" element={<AddExam />} />
             <Route path="exam/:id" element={<EditExam />} />
             <Route path="subscriptions" element={<Subscriptions />} />
@@ -46,6 +51,7 @@ function App() {
 
           {/* Login */}
           <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
         </Route>
       </Routes>
     </BrowserRouter>
