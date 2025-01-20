@@ -1,13 +1,20 @@
-import { Button } from "@mui/joy";
 import { useNavigate } from "react-router";
-import Table from '@mui/joy/Table';
-import Stack from '@mui/joy/Stack';
+import { Exam } from "../../../../../api-types";
+import { config } from "../../../config";
+import { useFetch } from "../../../lib/useFetch";
+import { ExamForm } from "./examComponents/ExamForm";
 
 export const AddExam: React.FC = () => {
-  const navigate=useNavigate()
-  return (
-    <div>
-    <Button onClick={()=>navigate('/')}>Vai agli esami</Button>
-    </div>
-  );
+  const fetch = useFetch();
+  const navigate = useNavigate();
+  const onSave = (exam: Exam) => {
+    fetch(`${config.API_BASEPATH}/exams`, {
+      method: "POST",
+      body: JSON.stringify(exam),
+    });
+    console.log("esame salvato", exam);
+    navigate("/teacher");
+  };
+
+  return <ExamForm onSave={onSave} />;
 };

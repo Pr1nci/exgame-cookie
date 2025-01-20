@@ -1,37 +1,50 @@
-import { useEffect, useState } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { createContext, PropsWithChildren, useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import { Role, User } from "../../../../api-types/user";
+import { config } from "../../config";
+import { useFetch } from "../../lib/useFetch";
+
+export const CurrentUserContext = createContext<User | undefined>(undefined);
 
 /**
  * Controllare che l'utente sia autenticato e che sia un teacher
  * Chiama l'api GET /users/me, che restituisce l'utente loggato, oppure un 401
  */
-export const TeacherGuard: React.FC = () => {
-  console.log("you must be a teacher");
-
+export const TeacherGuard: React.FC<PropsWithChildren> = ({ children }) => {
   const [authenticated, setAuthenticated] = useState<boolean | "loading">(
     "loading",
   );
   const [role, setRole] = useState<Role | undefined>();
+  const [currentUser, setCurrentUser] = useState<User>();
+  const fetch = useFetch();
 
   useEffect(() => {
-    fetch("/users/me")
-      .then((res) => res.json())
+    fetch(`${config.API_BASEPATH}/users/me`)
+      .then((res) => res?.json())
       .then((user: User) => {
+        console.log("Authenticated as", user);
         setAuthenticated(Boolean(user));
+        setCurrentUser(user);
         setRole(user.role);
       });
   }, []);
 
   if (authenticated === "loading") {
-    return null;
+    return "LOADING";
   }
 
   if (authenticated) {
     if (role === "teacher" || role === "admin") {
-      return <Outlet />;
+      return (
+        <CurrentUserContext.Provider value={currentUser}>
+          {children}
+        </CurrentUserContext.Provider>
+      );
     }
   }
 
+  console.log(
+    "You are not authenticated or you don't have teacher rights. Redirecting to login",
+  );
   return <Navigate to="/login" />;
 };

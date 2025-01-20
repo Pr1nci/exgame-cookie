@@ -1,14 +1,10 @@
 import Router from "@koa/router";
 import { Exam } from "../../api-types/exam";
 import { add, edit, index, remove, view } from "../services/exam";
-import { AuthenticatedContext } from "../types/session";
-import { authMiddleware } from "./auth";
 
-const router = new Router<unknown, AuthenticatedContext>({
+const router = new Router({
   prefix: "/exams",
 });
-
-router.use(authMiddleware());
 
 // All exams
 router.get("/", async (ctx) => {
@@ -29,15 +25,15 @@ router.get("/:id", async (ctx) => {
   ctx.body = exam;
 });
 
-// Add an exam
+// Add a exam
 router.post("/", async (ctx) => {
   ctx.accepts("json");
-  console.log(ctx.body);
+  console.log(ctx.request.body);
   const exam = await add(ctx.request.body as Exam);
   ctx.response.body = exam;
 });
 
-// Edit an exam
+// // Edit a exam
 router.put("/:id", async (ctx) => {
   ctx.accepts("json");
   const response = await edit(ctx.params.id, ctx.request.body as Exam);
